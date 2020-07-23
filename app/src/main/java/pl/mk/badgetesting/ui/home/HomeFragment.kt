@@ -4,9 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -27,12 +26,25 @@ class HomeFragment : Fragment() {
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
-        val textView: ImageView = root.findViewById(R.id.text_home)
+        val imageView: View = root.findViewById(R.id.text_home)
 
 
-        val badgeDrawable = BadgeDrawable.create(context!!)
-        badgeDrawable.number = 32
-        BadgeUtils.attachBadgeDrawable(badgeDrawable, textView, root.findViewById(R.id.frame_layout))
+//        val badgeDrawable = BadgeDrawable.create(context!!)
+//        badgeDrawable.number = 32
+//        BadgeUtils.attachBadgeDrawable(badgeDrawable, imageView, root.findViewById(R.id.frame_layout))
+
+//        imageView.setOnClickListener {
+//            BadgeUtils.setBadgeDrawableBounds(badgeDrawable, imageView, root.findViewById(R.id.frame_layout));
+//        }
+
+        imageView.getViewTreeObserver().addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val badgeDrawable = BadgeDrawable.create(context!!)
+                badgeDrawable.number = 32
+                BadgeUtils.attachBadgeDrawable(badgeDrawable, imageView, root.findViewById(R.id.frame_layout))
+                imageView.getViewTreeObserver().removeOnGlobalLayoutListener(this)
+            }
+        })
 
         homeViewModel.text.observe(viewLifecycleOwner, Observer {
         })
